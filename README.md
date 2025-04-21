@@ -1,0 +1,1 @@
+# lat2025-cop-function-rewards
