@@ -15,23 +15,19 @@ def buildActualPathFromOrder(order, pointPool, depot):
 def plotPathFromIndividual(ind, pointPool, depot, alpha=1, color=None, title=""):
     decodedPathBest = decodeIndividual(ind, pointPool)
     path = buildActualPathFromIndividual(decodedPathBest, depot)
-
-    plotLine(list(path), alpha=alpha, color=color)
-    plotLine([path[0]], style='D', alpha=alpha, size=10, color="green")
-    plotLine([path[-1]], style='D', alpha=alpha, size=10, color="orange")
-    if title:
-        plt.title(title)
-    plt.show()
+    plotPath(path, alpha, color, title)
     
 def plotPathFromOrder(order, pointPool, depot, alpha=1, color=None, title=""):
     path = buildActualPathFromOrder(order, pointPool, depot)
+    plotPath(path, alpha, color, title)
 
+def plotPath(path, alpha, color=None, title=''):
     plotLine(list(path), alpha=alpha, color=color)
     plotLine([path[0]], style='D', alpha=alpha, size=10, color="green")
     plotLine([path[-1]], style='D', alpha=alpha, size=10, color="orange")
     if title:
         plt.title(title)
-    plt.show()
+    plt.savefig('out.pdf')
 
 def plotLine(points, style='bo-', alpha=1, size=7, color=None):
     X, Y = XY(points)
