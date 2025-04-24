@@ -2,10 +2,13 @@ import random
 import numpy as np
 from scipy.stats import truncnorm
 from deap import algorithms, tools
+from COPFUtils import Cluster
 
 # General calculations --------
 
-def decodeIndividual(ind, pointPool):
+def decodeIndividual(ind: list[float], pointPool: list[complex]) -> list[tuple[complex,int]]:
+    '''Decodes individual `ind` to a sequence of visited points, '''
+
     enumerated = enumerate(ind)
     enumerated = list(filter(lambda x : x[1] >= 0, enumerated))
     #Decode only visited
@@ -13,7 +16,9 @@ def decodeIndividual(ind, pointPool):
 
     return [(pointPool[x[0]], x[0]) for x in enumerated]
 
-def calculateDistance(depot, decodedPath):
+def calculateDistance(depot: complex, decodedPath: list[tuple[complex,int]]) -> float:
+    '''Calculate path distance of a decodedPath (decoded individual), starting and ending at `depot`.'''
+
     if(len(decodedPath) == 0): return 0
 
     distance = 0
@@ -31,7 +36,10 @@ def calculateDistance(depot, decodedPath):
 
     return distance
 
-def makeIndividualValid(ind, depot, pointPool, TMAX):
+def makeIndividualValid(ind: list[float], depot: complex, 
+                        pointPool: list[complex], TMAX: float) -> list[float]:
+    '''Removes points visited by individual `ind` randomly until it's total distance is lower than `TMAX`.'''
+
     decodedPath = decodeIndividual(ind, pointPool)
     while(calculateDistance(depot, decodedPath) > TMAX):
         #Choose and remove a random node
@@ -44,8 +52,13 @@ def makeIndividualValid(ind, depot, pointPool, TMAX):
 
 # Initialization --------
 
-def nodeOmissionProbability(depot, pointPool, TMAX, loopMax = 10000):
-    count, loop = 0,0
+def nodeOmissionProbability(depot: complex, pointPool: list[complex], TMAX: float, loopMax = 10000) -> float:
+    '''Calculates the omission probability of a point in a starting solution. That is, given a solution, the probability of
+    a specific point being omitted from the solution. This allows for a starting population that conforms better to `TMAX`.
+    
+    For more details see `https://doi.org/10.1109/CEC.2000.870739`'''
+
+    count = 0
     totalNodes = len(pointPool)
     for i in range(loopMax):
         #Build an instance
@@ -61,8 +74,9 @@ def nodeOmissionProbability(depot, pointPool, TMAX, loopMax = 10000):
         if(calculateDistance(depot, decodedPath) <= TMAX): count += 1
     return 1 - (count/loopMax)
 
-def generateRandomIndividual(pointPool, omissionPb = None):
-    ind = [np.random.uniform(low = 0.01) for i in pointPool]
+def generateRandomIndividual(pointPool: list[complex], omissionPb = None) -> list[float]:
+    '''Generates a random individual, applying the omission probability `omissionPb`, if specified.'''
+    ind = [np.random.uniform(low = 0.01) for _ in pointPool]
 
     if omissionPb != None:
         for idx in range(len(ind)):
@@ -71,7 +85,11 @@ def generateRandomIndividual(pointPool, omissionPb = None):
             
     return ind
 
-def generateRandomIndividualClustered(pointPool, clusterPool, omissionPb = None):
+def generateRandomIndividualClustered(pointPool: list[complex], 
+                                      clusterPool: list[Cluster], omissionPb = None) -> list[float]:
+    '''Generates a random individual, but clustering points in the same cluster. Uses a truncated normal distribution for each cluster,
+    meaning points of the same cluster tend to have similar initial values, but also maintaining diversity.
+    '''
     ind = list(range(len(pointPool)))
     for cluster in clusterPool:
         mean = np.random.uniform(low = 0.01)
@@ -88,7 +106,12 @@ def generateRandomIndividualClustered(pointPool, clusterPool, omissionPb = None)
 
 # Genetic Operators --------
 
-def evaluateMulti(ind, depot, pointPool, clusterPool, TMAX):
+def evaluateMulti(ind: list[float], depot: complex, pointPool: list[complex], 
+                  clusterPool: list[Cluster], TMAX: float) -> tuple[float,float]:
+    '''Multi-objective evaluation. Evaluates `totalReward` and `(totalReward/totalDistance)`.
+    Makes individual valid beforehand.
+    '''
+
     #Make ind valid
     ind = makeIndividualValid(ind, depot, pointPool, TMAX)
     decoded = decodeIndividual(ind, pointPool)
@@ -98,14 +121,20 @@ def evaluateMulti(ind, depot, pointPool, clusterPool, TMAX):
     if score == 0 : return -np.inf, -np.inf
     return score, score / distance
 
-def evaluateSingle(ind, depot, pointPool, clusterPool, TMAX):
+def evaluateSingle(ind: list[float], depot: complex, pointPool: list[complex], 
+                   clusterPool: list[Cluster], TMAX: float) -> float:
+    '''Single-object evaluation. Evaluates only `totalReward`. Makes individual valid beforehand'''
     #Make ind valid
     ind = makeIndividualValid(ind, depot, pointPool, TMAX)
     decoded = decodeIndividual(ind, pointPool)
 
     return sum([cluster.getScore(ind) for cluster in clusterPool]),
 
-def mutate(ind, clusterPool):
+def mutate(ind: list[float], clusterPool: list[Cluster]) -> tuple[list[float]]:
+    '''Mutation operator. Chooses a random cluster, and, for each point of the cluster, toggles the point on/off or
+    swaps values with another point belonging to the cluster according to chance.
+    '''
+
     cluster = np.random.choice(clusterPool)
     for point in cluster.pointList:
         if random.random() <= 0.15:
@@ -119,7 +148,13 @@ def mutate(ind, clusterPool):
 
 # Genetic Algorithm --------
 
-def mainEvolution(population, toolbox, cxpb, mutpb, ngen, stallCheck=None, stats=None, halloffame = None, verbose = __debug__, seed=None):
+def mainEvolution(population: list[list[float]], toolbox, cxpb: float, mutpb: float, ngen: int, 
+                  stallCheck: int|None = None, stats=None, halloffame = None, 
+                  verbose = False, seed=None):
+    '''Genetic Algorithm evolution algorithm. Originally taken from `deap` library and adapted to needs.
+    For more information on `stats` and `halloffame` parameters, 
+    check `https://deap.readthedocs.io/en/stable/api/algo.html?highlight=ea#deap.algorithms.eaSimple`'''
+    
     random.seed(seed)
     POPSIZE = len(population)
 
