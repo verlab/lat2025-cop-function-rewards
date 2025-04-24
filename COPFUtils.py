@@ -84,10 +84,10 @@ def readSopFile(filepath, defaultFunc='linear', verbose=False):
     finalPointPool = [] #"Clusterized" point pool
     originalConvertedPointsMap = {} # Map clusterized to original points
     
-    #Check if file has functions attributed, otherwise stick to linear
+    #Check if file has functions attributed, otherwise stick to defaultFunc
     hasFunctions = True
     if arr[numPoints+12].split(' ')[1].isnumeric():
-        if verbose: print("Warning! No functions attributed to instance. Defaulting to linear function for every cluster.")
+        if verbose: print(f"Warning! No functions attributed to instance. Defaulting to {defaultFunc} function for every cluster.")
         hasFunctions = False
 
     for i in range(numPoints + 12, len(arr)):
