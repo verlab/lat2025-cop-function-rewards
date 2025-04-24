@@ -21,6 +21,7 @@ def parseArgs():
     #Program params
     parser.add_argument('-d', type=str, help='default function assumed of the cluster, in case no function specified', default='linear')
     #TODO add choice of main function
+    #TODO ver se esse mutmoverate e pointmutrate estao sendo aplicados
 
     return parser.parse_args()
 
