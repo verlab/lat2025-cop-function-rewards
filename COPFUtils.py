@@ -1,4 +1,4 @@
-from COPFfunctions import linear, exponential, exponential_with_initial, quadratic, logarithmic
+from COPFfunctions import linear, exponential, exponential_with_initial, quadratic, logarithmic, ClusterFunction
 funcMap = {'linear' : linear, 'exponential' : exponential, 'exponentiali' : exponential_with_initial, 
            'logarithmic' : logarithmic, 'quadratic' : quadratic}
 
@@ -8,7 +8,7 @@ class Cluster:
     `function` should be a class that returns an object with `eval` and `name` fields. See ` COPFfunctions.py` for more information.
     '''
 
-    def __init__(self, totalScore: float, pointList: list[int], function, *argv):
+    def __init__(self, totalScore: float, pointList: list[int], function: ClusterFunction, *argv):
         self.pointList = pointList
         self.totalScore = totalScore
         self.function = function(totalScore, len(pointList), *argv)
