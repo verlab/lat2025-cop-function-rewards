@@ -7,7 +7,7 @@ import os.path
 
 parser = argparse.ArgumentParser(prog='Benchmarker.py')
 parser.add_argument('instancesPath', type=str, help='path to list of instances')
-parser.add_argument('execs', type=int, help='number of executions')
+parser.add_argument('execs', type=int, help='number of times to execute each instance, method and function combination')
 
 parser.add_argument('--multi', action='store_true', help='Benchmark non-sequential multi objective implementation')
 parser.add_argument('--single', action='store_true', help='Benchmark non-sequential single objective implementation')
@@ -18,6 +18,7 @@ args = parser.parse_args()
 
 #Define parameters for testing
 params = {'popsize': 400, 'ngen': 1, 'cxpb': 0.7, 'mutpb': 0.4, 'mutMoveRate': 0.75, 'pointMutRate': 0.75, 'stallCheck': 100}
+
 order = {'instance': 'Instance Name', 'score': 'Score', 'numCluster': 'Cluster Num',
          'distance': 'Total Distance', 'TMAX': 'TMAX', 'runtime': 'Runtime',
          'pointsVisitedOrder' : 'Path', 'funcs': 'Cluster Function type', 'gen': 'Generations'}
@@ -67,8 +68,6 @@ else: #Test selected
     if args.multi: toTest.append((mainNonSequentialMulti, 'non-sequential-multi'))
     if args.single: toTest.append((mainNonSequentialSingle, 'non-sequential-single'))
     if args.singleSeq: toTest.append((mainFunctionOPClusterOPOrdered, 'sequential-single'))
-
-print(toTest)
 
 #Run things
 for method,name in toTest:
