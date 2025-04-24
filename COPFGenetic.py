@@ -150,11 +150,11 @@ def mutate(ind: list[float], clusterPool: list[Cluster]) -> tuple[list[float]]:
 
 def mainEvolution(population: list[list[float]], toolbox, cxpb: float, mutpb: float, ngen: int, 
                   stallCheck: int|None = None, stats=None, halloffame = None, 
-                  verbose = False, seed=None):
+                  verbose = False, seed=None) -> tuple[list[list[float]], list]:
     '''Genetic Algorithm evolution algorithm. Originally taken from `deap` library and adapted to needs.
     For more information on `stats` and `halloffame` parameters, 
     check `https://deap.readthedocs.io/en/stable/api/algo.html?highlight=ea#deap.algorithms.eaSimple`'''
-    
+
     random.seed(seed)
     POPSIZE = len(population)
 

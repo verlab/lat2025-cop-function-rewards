@@ -6,14 +6,15 @@ import time
 
 toolbox = base.Toolbox()
 
-def mainNonSequentialMulti(instancePath, params, defaultFunc='linear'):
+def mainNonSequentialMulti(instancePath: str, params: dict, defaultFunc: str='linear') -> dict:
+    '''Full algorithm for non-sequential multi-objective approach of the
+    Clustered Orienteering Problem with Function-based Rewards.
+    '''
+
     #Process params
     POPSIZE, NGEN, CXPB, MUTPB, stallCheck = itemgetter('popsize', 'ngen', 'cxpb', 'mutpb', 'stallCheck')(params)
 
-    if instancePath.endswith('sop'):
-        TMAX, depot, mapToOriginalPoints, pointPool, clusterPool = readSopFile(instancePath, defaultFunc)
-    else:
-        TMAX, depot, mapToOriginalPoints, clusterPool = readCopFile(instancePath, defaultFunc)
+    TMAX, depot, mapToOriginalPoints, pointPool, clusterPool = readSopFile(instancePath, defaultFunc)
 
     refPoints = tools.uniform_reference_points(2, 16)
     omissionProbability = nodeOmissionProbability(depot, pointPool, TMAX)
@@ -61,14 +62,15 @@ def mainNonSequentialMulti(instancePath, params, defaultFunc='linear'):
 
     return {'instance': instanceName, 'score': score, 'numCluster': numCluster, 'distance': distance, 'TMAX': TMAX, 'runtime': end - start, 'pointsVisitedOrder': pointsVisitedOrder, 'funcs' : funcs, 'gen' : gen}
 
-def mainNonSequentialSingle(instancePath, params, defaultFunc='linear'):
+def mainNonSequentialSingle(instancePath: str, params: dict, defaultFunc: str='linear') -> dict:
+    '''Full algorithm for non-sequential single-objective approach of the 
+    Clustered Orienteering Problem with Function-based Rewards.
+    '''
+
     #Process params
     POPSIZE, NGEN, CXPB, MUTPB, stallCheck = itemgetter('popsize', 'ngen', 'cxpb', 'mutpb', 'stallCheck')(params)
 
-    if instancePath.endswith('sop'):
-        TMAX, depot, mapToOriginalPoints, pointPool, clusterPool = readSopFile(instancePath, defaultFunc)
-    else:
-        TMAX, depot, pointPool, clusterPool = readCopFile(instancePath, defaultFunc)
+    TMAX, depot, mapToOriginalPoints, pointPool, clusterPool = readSopFile(instancePath, defaultFunc)
 
     omissionProbability = nodeOmissionProbability(depot, pointPool, TMAX)
 
