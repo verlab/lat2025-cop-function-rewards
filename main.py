@@ -1,4 +1,5 @@
 from COPFMainFunctions import mainNonSequentialMulti, mainNonSequentialSingle
+from COPFSequentialOrdered import mainFunctionOPClusterOPOrdered
 from COPFUtils import funcMap, readSopFile, revertToRepresentationPoints
 from COPFVisualizers import plotPathFromOrder
 
@@ -17,11 +18,17 @@ def parseArgs():
     parser.add_argument('mutpb', type=float, help='probability for mutation')
     parser.add_argument('stallCheck', type=float, help='maximum number of stall generations')
 
+    #Optional GA params
+    parser.add_argument('--mutMove', type=float, help='Rate of which points of the same cluster are swapped in mutation', default=.15, metavar='rate')
+    parser.add_argument('--pointMove', type=float, help='Rate of which points of the same cluster are toggled in mutation', default=.15, metavar='rate')
+
+    #Which main to run
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--single', action='store_true', help='Execute non-sequential single objective implementation')
+    group.add_argument('--singleSeq', action='store_true', help='Execute sequential single objective implementation')
 
     #Program params
-    parser.add_argument('-d', type=str, help='default function assumed of the cluster, in case no function specified', default='linear')
-    #TODO add choice of main function
-    #TODO ver se esse mutmoverate e pointmutrate estao sendo aplicados
+    parser.add_argument('-d', type=str, help='default function assumed of the cluster, in case no function specified', default='linear', metavar='default-func')
 
     return parser.parse_args()
 
@@ -40,9 +47,14 @@ if __name__ == '__main__':
     
     params = {'instancePath': args.instancePath, 'popsize': args.popsize,
               'ngen': args.ngen, 'cxpb': args.cxpb, 'mutpb': args.mutpb,
-              'stallCheck': args.stallCheck}
+              'stallCheck': args.stallCheck, 'mutMoveRate': args.mutMove,
+              'pointMutRate': args.pointMove}
+    
+    method = mainNonSequentialMulti
+    if args.single: method = mainNonSequentialSingle
+    if args.singleSeq: method = mainFunctionOPClusterOPOrdered
 
-    ans = mainNonSequentialMulti(args.instancePath, params, args.d)
+    ans = method(args.instancePath, params, args.d)
 
     #Delete long prints
     del ans['funcs']
@@ -52,8 +64,9 @@ if __name__ == '__main__':
     #Print summary
     pprint.pprint(ans)
 
-    #We can also plot!
-    tmax, depot, pointMap, pointPool, clusterPool = readSopFile(args.instancePath, args.d)
-    order = revertToRepresentationPoints(pointMap, order)
+    #We can also plot! (if not ordered)
+    if not args.singleSeq:
+        tmax, depot, pointMap, pointPool, clusterPool = readSopFile(args.instancePath, args.d)
+        order = revertToRepresentationPoints(pointMap, order)
 
-    plotPathFromOrder(order, pointPool, depot)
+        plotPathFromOrder(order, pointPool, depot)

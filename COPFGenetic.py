@@ -130,16 +130,17 @@ def evaluateSingle(ind: list[float], depot: complex, pointPool: list[complex],
 
     return sum([cluster.getScore(ind) for cluster in clusterPool]),
 
-def mutate(ind: list[float], clusterPool: list[Cluster]) -> tuple[list[float]]:
+def mutate(ind: list[float], clusterPool: list[Cluster], 
+           mutMoveRate: float = .15, pointMutRate: float = .15) -> tuple[list[float]]:
     '''Mutation operator. Chooses a random cluster, and, for each point of the cluster, toggles the point on/off or
     swaps values with another point belonging to the cluster according to chance.
     '''
 
     cluster = np.random.choice(clusterPool)
     for point in cluster.pointList:
-        if random.random() <= 0.15:
+        if random.random() <= pointMutRate:
             ind[point] *= -1
-        elif random.random() <= 0.15:
+        elif random.random() <= mutMoveRate:
              #Choose random and swap
             idx = random.choice(cluster.pointList)
             ind[point], ind[idx] = ind[idx], ind[point]
