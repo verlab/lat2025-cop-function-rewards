@@ -20,7 +20,7 @@ def parseArgs():
 
     #Optional GA params
     parser.add_argument('--mutMove', type=float, help='Rate of which points of the same cluster are swapped in mutation', default=.15, metavar='rate')
-    parser.add_argument('--pointMove', type=float, help='Rate of which points of the same cluster are toggled in mutation', default=.15, metavar='rate')
+    parser.add_argument('--mutPoint', type=float, help='Rate of which points of the same cluster are toggled in mutation', default=.15, metavar='rate')
 
     #Which main to run
     group = parser.add_mutually_exclusive_group()
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     params = {'instancePath': args.instancePath, 'popsize': args.popsize,
               'ngen': args.ngen, 'cxpb': args.cxpb, 'mutpb': args.mutpb,
               'stallCheck': args.stallCheck, 'mutMoveRate': args.mutMove,
-              'pointMutRate': args.pointMove}
+              'pointMutRate': args.mutPoint}
     
     method = mainNonSequentialMulti
     if args.single: method = mainNonSequentialSingle
@@ -70,3 +70,5 @@ if __name__ == '__main__':
         order = revertToRepresentationPoints(pointMap, order)
 
         plotPathFromOrder(order, pointPool, depot)
+    else:
+        print("Sequential single-objective implementation does not support visualization")

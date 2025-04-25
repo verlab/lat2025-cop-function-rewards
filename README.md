@@ -20,6 +20,29 @@ The project can be executed for a single instance with `main.py`, which prints t
 
 ### Running for a single instance
 
+Runs a single instance with specified parameters. Also outputs a visualization. General usage of the program is as below:
+
+```console
+$ python main.py [-h] [--mutMove rate] [--mutPoint rate] [--single | --singleSeq] [-d default-func] instancePath popsize ngen cxpb mutpb stallCheck
+```
+
+For basic usage, pass the positional parameters, which are the needed Genetic Algorithm parameters. An example of a simple usage, using an instance which has random function to cluster association:
+
+```console
+$ python main.py ./sop-instances-random/11berlin52_T100_p2.sop 300 500 0.7 0.3 100
+```
+
+For instances which do not have a set to function to cluster associations, as the ones in `./sop-instances`, you may want to also pass a default function, which all of the clusters will be associated.
+
+```console
+$ python main.py ./sop-instances/11berlin52_T100_p2.sop 300 500 0.7 0.3 100 -d quadratic
+```
+
+Alternative implementations, such as the non-sequential single-objective and the sequential single-objective can also be tested with --single and --singleSeq, respectively. Note that the sequential version does not support visualization.
+
+Additional parameters mentioned in the paper, such as $\mu$ and $\nu$ can be also be specified using the options `mutPoint` and `mutMove` respectively, and passing a $[0,1]$ value.
+
+For more details on each parameter, run `python main.py -h`.
 
 ### Running in bulk using `Benchmarker.py`
 
