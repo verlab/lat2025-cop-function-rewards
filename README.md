@@ -1,14 +1,16 @@
 # Clustered Orienteering Problem with Function-based Rewards
 
+## Vinícius L. C. Faria\ Douglas G. Macharet
+
+###
+Computer Vision and Robotics Laboratory (VeRLab)\
+Department of Computer Science\
+Universidade Federal de Minas Gerais\
+Brazil
+
 Implementation for the Clustered Orienteering Problem with Function-based Rewards, utilizing a Genetic Algorithm heuristic.
 
-Vinícius L. C. Faria
-Douglas G. Macharet
 
-Computer Vision and Robotics Laboratory (VeRLab)
-Department of Computer Science
-Universidade Federal de Minas Gerais
-Brazil
 
 ![Example path for berlin instance](./screenshots/berlin.png)
 
