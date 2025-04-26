@@ -1,7 +1,7 @@
 from COPFMainFunctions import mainNonSequentialMulti, mainNonSequentialSingle
 from COPFSequentialOrdered import mainFunctionOPClusterOPOrdered
 from COPFUtils import funcMap, readSopFile, revertToRepresentationPoints
-from COPFVisualizers import plotPathFromOrder
+from COPFVisualizers import plotPathFancy
 
 import argparse
 import sys
@@ -66,9 +66,6 @@ if __name__ == '__main__':
 
     #We can also plot! (if not ordered)
     if not args.singleSeq:
-        tmax, depot, pointMap, pointPool, clusterPool = readSopFile(args.instancePath, args.d)
-        order = revertToRepresentationPoints(pointMap, order)
-
-        plotPathFromOrder(order, pointPool, depot)
+        plotPathFancy(args.instancePath, args.d, order)
     else:
         print("Sequential single-objective implementation does not support visualization")
